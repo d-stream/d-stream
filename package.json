@@ -4,7 +4,8 @@
   "description": "A decentralized video streaming platform built on top of Ethereum",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "test-dev": "nodemon --exec \"mocha -R min\""
   },
   "author": "",
   "license": "ISC",

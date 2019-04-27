@@ -10,10 +10,15 @@ beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
 
     dstream = await new web3.eth.Contract(JSON.parse(compiledDStream.interface))
-        .deploy({ data: compiledDStream.bytecode })
-        .send({ from: accounts[0], gas: '1500000' });
+        .deploy({
+            data: compiledDStream.bytecode
+        })
+        .send({
+            from: accounts[0],
+            gas: '1500000'
+        });
 
-    await dstream.methods.uploadVideo('hashofIPFS', 'title', 'description', 'category').send({
+    await dstream.methods.uploadVideo('IPFS_HASH', 'META_DATA_HASH', 'CATEGORY').send({
         from: accounts[0],
         gas: '1000000'
     });
@@ -45,7 +50,7 @@ describe('DStream', () => {
 
     it(`doesn't upload an already uploaded video`, async () => {
         try {
-            await dstream.methods.uploadVideo('hashofIPFS', 'title', 'description', 'category').send({
+            await dstream.methods.uploadVideo('IPFS_HASH', 'META_DATA_HASH', 'CATEGORY').send({
                 from: accounts[0],
                 gas: '1000000'
             });
