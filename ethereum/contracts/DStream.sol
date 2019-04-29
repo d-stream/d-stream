@@ -156,6 +156,13 @@ contract Video {
       }
   }
 
+  function viewVideo(uint8 _v, bytes32 _r, bytes32 _s, address _address) public{
+      require(!userToVideoViewStatus[_address]);
+      require(verify(keccak256(abi.encodePacked("view",IPFSHash)),_v,_r,_s,_address));
+      userToVideoViewStatus[_address]=true;
+      numViews++;
+  }
+
 
     
 }

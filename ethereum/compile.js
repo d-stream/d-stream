@@ -7,6 +7,7 @@ const solc = require('solc');
 // Getting path of build folder
 const buildPath = path.resolve(__dirname, 'build');
 
+
 // Removing build folder sismilar to rm -r builder
 fs.removeSync(buildPath);
 

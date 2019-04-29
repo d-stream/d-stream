@@ -289,4 +289,77 @@ describe('Video Contract', () => {
         // asserting that the num of Dislikes increased by 2
         assert.equal(parseInt(numOfDislike), 2);
     });
+
+
+
+
+    //viewVideo() test suite
+    describe('View video', () => {
+
+        let ipfsHash, msg, sig, v, r, s;
+        beforeEach(async () => {
+            ipfsHash = await videoContract.methods.IPFSHash().call();
+            //the user will sign the message ("Like" concatenated with the video's ipfs hash)
+            msg = web3.utils.sha3("view".concat(ipfsHash));
+            //the signature is signed with the user's private key
+            sig = await web3.eth.sign(msg, accounts[0]);
+
+            //v,r,s are parts of the signature
+            v = parseInt(sig.substr(130, 2)) + 27;
+            r = sig.substr(0, 66);
+            s = "0x" + sig.substr(66, 64);
+
+
+        });
+
+        it('Increments the number of views for watching the video for the first time', async () => {
+
+            //we are sending a TX to say that accounts[0] has viewed a video
+            //accounts[1] (DStream ) is responsible for submitting this TX
+            await videoContract.methods.viewVideo(v, r, s, accounts[0]).send({
+                from: accounts[1], gas: '1000000'
+            });
+
+            const numViews = await videoContract.methods.numViews().call();
+
+            //checking the user view status  after viewing the video, it should be true
+            const userStatus = await videoContract.methods.userToVideoViewStatus(accounts[0]).call();
+
+            assert.equal(userStatus, 1);
+            assert.equal(numViews, 1);
+        });
+
+        it('Do nothing for users that already watched the video', async () => {
+            //we are sending a TX to say that accounts[0] has viewed a video
+            //accounts[1] (DStream ) is responsible for submitting this TX
+            await videoContract.methods.viewVideo(v, r, s, accounts[0]).send({
+                from: accounts[1], gas: '1000000'
+            });
+
+
+            try {
+                //trying to call viewVideo() again for the same user that has already watched the video
+                await videoContract.methods.viewVideo(v, r, s, accounts[0]).send({
+                    from: accounts[1], gas: '1000000'
+                });
+                assert(false);
+            } catch (err) {
+
+                //An error should be thrown because the require statement in the viewVideo() function will not succeed 
+                //because the user is marked as viewer
+                assert(err);
+            }
+
+        });
+
+
+    });
+
+
+
+
+
+
+
+
 });
