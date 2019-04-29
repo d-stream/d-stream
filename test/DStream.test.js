@@ -27,11 +27,6 @@ beforeEach(async () => {
 
     video = await new web3.eth.Contract(JSON.parse(compiledVideo.interface), videoAddress);
 
-
-
-
-
-
 });
 
 
