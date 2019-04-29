@@ -64,14 +64,19 @@ contract Video {
             category = _category;
     }
 
+
+    /* 
+        Function used to verify user signture by comparing his address with address
+        extracted from signature
+    */
     //A function that verifies that a user has signed a specific message
-    function verify(bytes32 _message, uint8 _v, bytes32 _r, bytes32 _s, address _address) public pure returns (bool) {
+    function verify(bytes32 _hash, uint8 _v, bytes32 _r, bytes32 _s, address _address) public pure returns (bool) {
 
     //An ethereum related prefix that should be hashed with the original messaage
     bytes memory prefix = "\x19Ethereum Signed Message:\n32";
 
     //hash the prefix and the message together
-    bytes32 prefixedHash = keccak256(abi.encodePacked(prefix, _message));
+    bytes32 prefixedHash = keccak256(abi.encodePacked(prefix, _hash));
 
     //If the prefixedHash and the signtaure (v,r,s) returned the user's address, then we can verify
     //that this user has signed the message with his private key
@@ -122,5 +127,35 @@ contract Video {
   }
 
   
+
+    
+   
+
+
+
+    /*
+        Disklike function has 3 cases
+        if user has already liked the video => it changes user state from like to dislike
+        if user hasn't interacted with the video before => it changes user state to dislike
+        if user has already disliked the video => it changes user state from like to neutral
+     */
+
+    function dislikeVideo(uint8 _v, bytes32 _r, bytes32 _s, address _user) public {
+      require(verify(keccak256(abi.encodePacked("dislike",IPFSHash)),_v,_r,_s,_user));
+      Status userStatus = userToVideoInteractionStatus[_user];
+      if (userStatus == Status.LIKING) {
+           userToVideoInteractionStatus[_user] = Status.DISLIKING;
+           numDislikes++;
+           numLikes--;
+      } else if (userStatus == Status.NEUTRAL) {
+            userToVideoInteractionStatus[_user] = Status.DISLIKING;
+            numDislikes++;
+      } else {
+          userToVideoInteractionStatus[_user] = Status.NEUTRAL;
+          numDislikes--;
+      }
+  }
+
+
     
 }
