@@ -30,7 +30,7 @@ contract DStream {
 contract Video {
     
     // User interaction with video can be either on of these states
-    enum Status {LIKING,DISLIKING,NEUTRAL}
+    enum Status {NEUTRAL,LIKING,DISLIKING}
     
     // owner of the video Address on ethereum network
     address public owner;
@@ -44,9 +44,9 @@ contract Video {
     // will be used later for filtering user content according to his preferences 
     string public category;
 
-    uint public numOfLikes;
-    uint numOFDislikes;
-    uint public numOfViews;
+    uint public numLikes;
+    uint public numDislikes;
+    uint public numViews;
     
     // hashTable used to detect whether user has already seen the video 
     mapping(address=>bool) public userToVideoViewStatus;
@@ -62,5 +62,43 @@ contract Video {
             metaDataHash = _metaDataHash;
             category = _category;
     }
+
+    /* 
+        Function used to verify user signture by comparing his address with address
+        extracted from signature
+    */
+    function verify(bytes32 _message, uint8 _v, bytes32 _r, bytes32 _s, address _address) 
+        public pure returns (bool) {
+            bytes memory prefix = "\x19Ethereum Signed Message:\n32";
+            bytes32 prefixedHash = keccak256(abi.encodePacked(prefix, _message));
+            return ecrecover(prefixedHash, _v, _r, _s) == _address;
+    }
+
+
+
+    /*
+        Disklike function has 3 cases
+        if user has already liked the video => it changes user state from like to dislike
+        if user hasn't interacted with the video before => it changes user state to dislike
+        if user has already disliked the video => it changes user state from like to neutral
+     */
+
+    function dislikeVideo(uint8 _v, bytes32 _r, bytes32 _s, address _user) public {
+      require(verify(keccak256(abi.encodePacked("dislike",IPFSHash)),_v,_r,_s,_user));
+      Status userStatus = userToVideoInteractionStatus[_user];
+      if (userStatus == Status.LIKING) {
+           userToVideoInteractionStatus[_user] = Status.DISLIKING;
+           numDislikes++;
+           numLikes--;
+      } else if (userStatus == Status.NEUTRAL) {
+            userToVideoInteractionStatus[_user] = Status.DISLIKING;
+            numDislikes++;
+      } else {
+          userToVideoInteractionStatus[_user] = Status.NEUTRAL;
+          numDislikes--;
+      }
+  }
+
+
     
 }
