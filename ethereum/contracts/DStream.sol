@@ -12,9 +12,10 @@ contract DStream {
         require(!videos[ipfsHash]);
         videos[ipfsHash]=true;
         
-        // <-- Explain This Line with comment -->
+        // creates a new video contract and stores its address
         address newVideo = address (new Video(msg.sender,ipfsHash,metaDataHash,category));
-
+        
+        //push the newly created contract's address to the array
         uploadedVideos.push(newVideo);
         
     }
@@ -30,7 +31,7 @@ contract DStream {
 contract Video {
     
     // User interaction with video can be either on of these states
-    enum Status {LIKING,DISLIKING,NEUTRAL}
+    enum Status {NEUTRAL,LIKING,DISLIKING}
     
     // owner of the video Address on ethereum network
     address public owner;
@@ -44,9 +45,9 @@ contract Video {
     // will be used later for filtering user content according to his preferences 
     string public category;
 
-    uint public numOfLikes;
-    uint numOFDislikes;
-    uint public numOfViews;
+    uint public numLikes;
+    uint public numDislikes;
+    uint public numViews;
     
     // hashTable used to detect whether user has already seen the video 
     mapping(address=>bool) public userToVideoViewStatus;
@@ -62,5 +63,64 @@ contract Video {
             metaDataHash = _metaDataHash;
             category = _category;
     }
+
+    //A function that verifies that a user has signed a specific message
+    function verify(bytes32 _message, uint8 _v, bytes32 _r, bytes32 _s, address _address) public pure returns (bool) {
+
+    //An ethereum related prefix that should be hashed with the original messaage
+    bytes memory prefix = "\x19Ethereum Signed Message:\n32";
+
+    //hash the prefix and the message together
+    bytes32 prefixedHash = keccak256(abi.encodePacked(prefix, _message));
+
+    //If the prefixedHash and the signtaure (v,r,s) returned the user's address, then we can verify
+    //that this user has signed the message with his private key
+    return ecrecover(prefixedHash, _v, _r, _s) == _address;
+  }
+
+  function likeVideo(uint8 _v, bytes32 _r, bytes32 _s, address _user) public{
+      
+      //We make sure that the user intended to like the video
+      //by checking if he signed the message ("like"+ videohash) with his private key
+      require(verify(keccak256(abi.encodePacked("like",IPFSHash)),_v,_r,_s,_user));
+      
+      //if the user has liked this video before and clicked the like button again
+      if(userToVideoInteractionStatus[_user]==Status.LIKING){
+          
+          //return the user's status to NEUTRAL
+          userToVideoInteractionStatus[_user]=Status.NEUTRAL;
+          
+          //decrement the video's likes counter
+          numLikes--;
+          
+      }
+      
+      //if the user likes a video that he disliked before
+      else if(userToVideoInteractionStatus[_user]==Status.DISLIKING){
+        
+          //change user's state to liking
+          userToVideoInteractionStatus[_user]=Status.LIKING;
+          
+          //decrement the video's dislikes counter
+          numDislikes--;
+          
+          //increment the video's likes counter
+          numLikes++;
+          
+      }
+
+      //The user neither liked nor disliked this video before
+      else {
+          
+          //change user's state to liking
+          userToVideoInteractionStatus[_user]=Status.LIKING;
+          
+          //increment the video's likes counter
+          numLikes++;
+      }
+      
+  }
+
+  
     
 }

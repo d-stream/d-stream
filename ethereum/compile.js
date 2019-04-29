@@ -7,7 +7,7 @@ const solc = require('solc');
 // Getting path of build folder
 const buildPath = path.resolve(__dirname, 'build');
 
-// Removing build folder similar to rm -r builder
+// Removing build folder sismilar to rm -r builder
 fs.removeSync(buildPath);
 
 // Getting path of Dstream Contract file
@@ -18,7 +18,6 @@ const source = fs.readFileSync(dstreamPath, 'utf8');
 
 // Compiling the source file
 const output = solc.compile(source, 1).contracts;
-
 
 // Create the build directory again
 fs.ensureDirSync(buildPath);
