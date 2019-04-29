@@ -30,4 +30,5 @@ for (let contract in output) {
         path.resolve(buildPath, contract.replace(":", "") + '.json'),
         output[contract]
     );
+
 }
