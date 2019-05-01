@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 
 // to be modified based on your local database
-const db = new Sequelize('dstream', 'postgres', '123', {
+const db = new Sequelize('dstream', 'postgres', 'z', {
     dialect: 'postgres',
     host: 'localhost',
     logging: false
