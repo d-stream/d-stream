@@ -25,11 +25,14 @@ const Video = db.define('videos', {
         type: Sequelize.STRING,
         allowNull: false
 
+    }, thumbnail: {
+        type: Sequelize.STRING,
+        allowNull: false
     }
 
 }, {
-    timestamps: false
-});
+        timestamps: false
+    });
 
 
 module.exports = Video;
