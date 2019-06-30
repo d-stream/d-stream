@@ -7,7 +7,7 @@ const web3 = new Web3(ganache.provider());
 const {
     interface,
     bytecode
-} = require('../../ethereum/build/Video.json');
+} = require('../../ethereum/build/VideoTest.json');
 
 // Varaibles to be used for test cases
 let accounts;
@@ -370,8 +370,7 @@ describe('Video Contract', () => {
             //we are sending a TX to say that accounts[0] has viewed a video
             //accounts[1] (DStream ) is responsible for submitting this TX
             await videoContract.methods.viewVideo(v, r, s, accounts[0]).send({
-                from: accounts[1],
-                gas: '1000000'
+                from: accounts[1], gas: '1000000'
             });
 
             const numViews = await videoContract.methods.numViews().call();
@@ -387,16 +386,14 @@ describe('Video Contract', () => {
             //we are sending a TX to say that accounts[0] has viewed a video
             //accounts[1] (DStream ) is responsible for submitting this TX
             await videoContract.methods.viewVideo(v, r, s, accounts[0]).send({
-                from: accounts[1],
-                gas: '1000000'
+                from: accounts[1], gas: '1000000'
             });
 
 
             try {
                 //trying to call viewVideo() again for the same user that has already watched the video
                 await videoContract.methods.viewVideo(v, r, s, accounts[0]).send({
-                    from: accounts[1],
-                    gas: '1000000'
+                    from: accounts[1], gas: '1000000'
                 });
                 assert(false);
             } catch (err) {
