@@ -7,7 +7,7 @@ const web3 = new Web3(ganache.provider());
 const {
     interface,
     bytecode
-} = require('../ethereum/build/Video.json');
+} = require('../../ethereum/build/VideoTest.json');
 
 // Varaibles to be used for test cases
 let accounts;

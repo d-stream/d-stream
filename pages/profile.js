@@ -1,27 +1,44 @@
 import React, { Component } from 'react';
-import Layout from '../components/Layout'
-const axios = require('axios');
-import { Card, Image, Icon } from 'semantic-ui-react'
-class DStreamIndex extends Component {
+import Layout from '../components/Layout';
+import { Card, Image, Icon } from 'semantic-ui-react';
+import axios from 'axios';
 
-    static async getInitialProps() {
-        const trending = await axios({
-            url: 'http://localhost:4000/db/trending',
+
+class Profile extends Component {
+
+
+    static async getInitialProps(props) {
+        const address = props.query.address;
+        let response;
+        response = await axios({
+            url: `http://localhost:4000/db/profile/prevLiked/${address}`,
             method: 'get'
         });
-        const trendingVideos = trending.data;
-        const basedOnLiked = await axios({
-            url: 'http://localhost:4000/db/based',
+        const previouslyLiked = response.data;
+
+        response = await axios({
+            url: `http://localhost:4000/db/profile/uploaded/${address}`,
             method: 'get'
         });
+        const uploadedVideos = response.data;
 
-        const basedOnLikedVideos = basedOnLiked.data;
-        return { trendingVideos, basedOnLikedVideos };
+
+
+
+
+
+        return { previouslyLiked, uploadedVideos };
+
+
+
     }
     renderVideos(videos) {
+
         const items = videos.map((video) => {
 
             return (<Card key={video.id} href={`/videos/${video.hash}`}>
+
+
 
                 <Image
                     style={{
@@ -42,6 +59,10 @@ class DStreamIndex extends Component {
                     {video.numViews}
                 </Card.Content>
             </Card>);
+
+
+
+
         });
 
         return <Card.Group itemsPerRow={4}>{items}</Card.Group>;
@@ -62,9 +83,9 @@ class DStreamIndex extends Component {
                         fontFamily: '"Exo 2", sans-serif'
                     }}
                 >
-                    Trending Videos
-        </h4>
-                {this.renderVideos(this.props.trendingVideos)}
+                    Uploaded Videos
+      </h4>
+                {this.renderVideos(this.props.uploadedVideos)}
                 <h4
                     style={{
                         fontSize: "23px",
@@ -72,12 +93,13 @@ class DStreamIndex extends Component {
                         fontFamily: '"Exo 2", sans-serif'
                     }}
                 >
-                    Based on your liked videos
-          </h4>
-                {this.renderVideos(this.props.trendingVideos)}
+                    Previously Liked Videos
+        </h4>
+                {this.renderVideos(this.props.previouslyLiked)}
             </Layout >
         );
     }
 
 }
-export default DStreamIndex;
+
+export default Profile;

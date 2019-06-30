@@ -2,8 +2,8 @@ const assert = require('assert');
 const Web3 = require('web3');
 const ganache = require('ganache-cli');
 const web3 = new Web3(ganache.provider());
-const compiledDStream = require('../ethereum/build/DStream.json');
-const compiledVideo = require('../ethereum/build/Video.json');
+const compiledDStream = require('../../ethereum/build/DStreamTest.json');
+const compiledVideo = require('../../ethereum/build/VideoTest.json');
 let accounts, dstream, videoAddress, video;
 
 beforeEach(async () => {
