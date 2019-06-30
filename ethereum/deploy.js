@@ -11,7 +11,7 @@ const Web3 = require('Web3');
 const compiledDstream = require('./build/DStream.json');
 const HDWalletProvider = require('truffle-hdwallet-provider');
 const provider = new HDWalletProvider(
-    'auto sister sound rigid impose above assault hamster resource evidence gentle material',
+    'YOUR METAMASK SECRET BACKUP PHRASE HERE',
     'https://rinkeby.infura.io/v3/f53e99e4b51a45859fcc2c0e15bb51da'
 );
 

@@ -33,14 +33,11 @@ if (typeof window !== 'undefined' && typeof window.web3 !== 'undefined') {
     //this is just a gateway to access rinkeby network, no
     //problem in making it available to the public since it's free
     const provider = new HDWalletProvider(
-        "auto sister sound rigid impose above assault hamster resource evidence gentle material",
+        "YOUR METAMASK SECRET BACKUP PHRASE HERE",
         "https://rinkeby.infura.io/v3/f53e99e4b51a45859fcc2c0e15bb51da"
     );
     web3 = new Web3(provider);
-    let acc;
-    (async () => {
-        acc = await web3.eth.getAccounts();
-    })();
+
 }
 
 module.exports = web3;
